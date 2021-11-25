@@ -1,0 +1,2 @@
+rootProject.name = "NETPAY API23"
+include ':app'

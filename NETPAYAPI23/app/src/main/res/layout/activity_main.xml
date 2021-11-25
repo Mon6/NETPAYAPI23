@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sv"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvResponse"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_margin="8dp"
+                android:layout_marginTop="32dp"
+                android:enabled="true"
+                android:focusable="true"
+                android:hint="Respuesta"
+                android:longClickable="true"
+                android:textIsSelectable="true"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="8dp"
+                android:scrollbars = "vertical"/>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="Total"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvResponse" />
+
+            <EditText
+                android:id="@+id/editTransValue"
+                android:layout_width="114dp"
+                android:layout_height="41dp"
+                android:layout_marginStart="16dp"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="5.56"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+            <Button
+                android:id="@+id/findDeviceAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:text="Conectar dispositivo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvResponse" />
+
+            <Button
+                android:id="@+id/startTransactionAction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Iniciar Transacción"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextReference" />
+
+            <Button
+                android:id="@+id/actionFirstApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:text="Opcional 2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/actionSecondApp" />
+
+            <Button
+                android:id="@+id/actionSecondApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:text="Opcional 1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/findDeviceAction" />
+
+            <Button
+                android:id="@+id/refundAction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Refund"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/startTransactionAction" />
+
+
+
+
+            <Spinner
+                android:id="@+id/spinnerPromotion"
+                android:layout_width="159dp"
+                android:layout_height="36dp"
+                app:layout_constraintStart_toStartOf="@+id/editTransValue"
+                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+            <EditText
+                android:id="@+id/editTextReference"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Gilinho Hdz :)"
+                app:layout_constraintEnd_toEndOf="@id/spinnerPromotion"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@id/spinnerPromotion"
+                app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+            <TextView
+                android:id="@+id/textView001"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:layout_marginStart="15dp"
+                android:layout_marginBottom="25dp"
+                android:text=""
+                android:gravity="center"
+                android:hint="tipo"
+                android:textSize="25dp"
+                app:layout_constraintBottom_toTopOf="@+id/startTransactionAction"
+                app:layout_constraintStart_toEndOf="@+id/editTextReference" />
+
+            <TextView
+                android:id="@+id/textView002"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:layout_marginStart="15dp"
+                android:layout_marginBottom="25dp"
+                android:text=""
+                android:gravity="center"
+                android:hint="user"
+                android:textSize="25dp"
+                app:layout_constraintBottom_toTopOf="@+id/startTransactionAction"
+                app:layout_constraintStart_toEndOf="@+id/textView001" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Referencia"
+                app:layout_constraintStart_toStartOf="@id/editTextReference"
+                app:layout_constraintTop_toBottomOf="@+id/spinnerPromotion" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Promocion"
+                app:layout_constraintStart_toStartOf="@id/spinnerPromotion"
+                app:layout_constraintTop_toBottomOf="@+id/editTransValue" />
+
+            <Button
+                android:id="@+id/btnListReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="List Report"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/refundAction" />
+
+            <Button
+                android:id="@+id/bReportDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Report Details"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/refundAction" />
+
+            <!-- TODO (Boxito) Acomodar el ConstraintLayout-->
+            <Button
+                android:id="@+id/actionImageVoucher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="image-voucher"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/bReportDetails"
+                app:layout_constraintTop_toBottomOf="@+id/bReportDetails" />
+
+            <ImageView
+                android:id="@+id/image_voucher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/actionImageVoucher" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </LinearLayout>
+
+</ScrollView>
