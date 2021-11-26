@@ -158,6 +158,20 @@
                 app:layout_constraintStart_toEndOf="@+id/textView001" />
 
             <TextView
+                android:id="@+id/textView003"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="20"
+                android:gravity="center"
+                android:hint="user"
+                android:text="tag"
+                android:layout_marginStart="150dp"
+                android:layout_marginBottom="25dp"
+                android:textSize="25dp"
+                app:layout_constraintBottom_toTopOf="@+id/textView002"
+                app:layout_constraintStart_toEndOf="@+id/spinnerPromotion" />
+
+            <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

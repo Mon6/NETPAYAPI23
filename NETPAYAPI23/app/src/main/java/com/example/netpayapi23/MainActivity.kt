@@ -10,7 +10,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Toast
@@ -130,6 +129,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
 
         initializeViewState()
 
+        Leedb()
 
     }
 
@@ -430,6 +430,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             pContrasena=fila.getString(5);
             pAmbienteDB=fila.getInt(6);
 
+            textView003.setText(""+IdUsuario+" - "+pContrasena+" - "+pAmbienteDB)
             if (pAmbienteDB == 1){
                 //b_bk.setVisibility(View.INVISIBLE); //Muestra que es DEMO
                 //Toast.makeText(this, "PRODUCCION.", Toast.LENGTH_SHORT).show();
