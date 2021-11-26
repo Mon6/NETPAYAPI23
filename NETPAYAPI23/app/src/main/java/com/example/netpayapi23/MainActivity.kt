@@ -3,7 +3,6 @@ package com.example.netpayapi23
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,6 +10,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Toast
@@ -38,6 +38,10 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     private var orderId = "" //para el servicio del vouncher
     var bd: SQLiteDatabase? = null
     var admin: AdminSQLiteOpenHelper? = null
+    protected var IdUsuario: String? = null
+    protected var pContrasena : String? = null
+    private var pAmbienteDB = 0
+
 
     companion object {
         private const val BT_REQUEST_PERMISSION = 222
@@ -57,7 +61,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         //PREPARA ANTES DE COBRAR
 
         admin = AdminSQLiteOpenHelper(this, "coba", null, 1)
-        bd = admin.getWritableDatabase()
+        bd = admin!!.getWritableDatabase()
 
         // Initialize actions for transactions
         transaction = NpTransactions(this, connectReader, this)
@@ -416,10 +420,29 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     }
 
     fun Leedb(){
-        val fila: Cursor = bd.rawQuery(
+        val fila = bd!!.rawQuery(
             "select * from config where num=1"
                     + "", null
         )
+
+        if (fila.moveToFirst()) {
+            IdUsuario=fila.getString(4);
+            pContrasena=fila.getString(5);
+            pAmbienteDB=fila.getInt(6);
+
+            if (pAmbienteDB == 1){
+                //b_bk.setVisibility(View.INVISIBLE); //Muestra que es DEMO
+                //Toast.makeText(this, "PRODUCCION.", Toast.LENGTH_SHORT).show();
+
+                //textView27.setVisibility(View.INVISIBLE);  // TODO -> MODO DEMO COMENTADO DEBIDO A FALTA DE USO
+            }else{
+                //Toast.makeText(this, "MODO DEMO.", Toast.LENGTH_SHORT).show();
+            }
+
+        } else{
+            //Toast.makeText(this, "NO lee DB", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }
 
