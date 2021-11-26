@@ -1,5 +1,6 @@
 package com.example.netpayapi23
 
+import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,6 +11,8 @@ import android.util.Base64
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 import mx.com.netpay.sdk.api.models.transactions.Response
 import mx.com.netpay.sdk.device.ConnectDiscoveryState
@@ -19,6 +22,8 @@ import mx.com.netpay.sdk.reports.NpReports
 import mx.com.netpay.sdk.transactions.NpTransactions
 import mx.com.netpay.sdk.utils.MiniPreferences
 import java.io.UnsupportedEncodingException
+import kotlinx.android.synthetic.main.activity_main.*
+
 
 
 class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener {
@@ -33,22 +38,12 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     companion object {
         private const val BT_REQUEST_PERMISSION = 222
         private const val ENABLE_BT_REQUEST_CODE = 745
+        private const val SIGNATURE = 111  // TODO <<<<<<<
         private val TAG = MainActivity::class.java.simpleName
         private const val userNameDefault = "netpay-mini-android-sdk@bylup.com"
         private const val userPassDefault = "Password123!"
         private var _ConfigSdk: ConfigSdk? = null
     }
-
-    val btnListReport : Button = findViewById(R.id.btnListReport)
-    val bReportDetails : Button = findViewById(R.id.bReportDetails)
-    val startTransactionAction : Button = findViewById(R.id.startTransactionAction)
-    val actionImageVoucher : Button = findViewById(R.id.actionImageVoucher)
-    val tvResponse : TextView = findViewById(R.id.tvResponse)
-    val image_voucher : ImageView = findViewById(R.id.image_voucher)
-    val refundAction: Button = findViewById(R.id.refundAction)
-    val editTransValue: EditText = findViewById(R.id.editTransValue)
-    val editTextReference: EditText = findViewById(R.id.editTextReference)
-    val spinnerPromotion: Spinner = findViewById(R.id.spinnerPromotion)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +62,12 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 startDate = "2020-05-18",
                 endDate = null,
                 userId = null
-            ) {}
-
+            ) {
+                runOnUiThread {
+                    Log.w(TAG, it)
+                    Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         bReportDetails.setOnClickListener {
@@ -87,6 +86,16 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 }
             }
         }
+//TODO ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        // Start finding device and show results in initializeDevice()
+        findDeviceAction.setOnClickListener {
+            val permissionLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), BT_REQUEST_PERMISSION)
+            }
+            startConnectReaderDevice()
+        }
+//TODO ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         // Start SDK configurations and start transaction
         startTransactionAction.setOnClickListener {
@@ -97,8 +106,19 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         actionImageVoucher.setOnClickListener {
             getImageVoucher()
         }
-
+//TODO ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        initializeViewState()
     }
+//TODO ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    private fun initializeViewState() {
+        val promotions = PromotionEnum.values().map { it.text }
+        val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, promotions)
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerPromotion.apply {
+            adapter = aa
+        }
+    }
+//TODO ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     override fun onStart() {
         super.onStart()
@@ -205,6 +225,13 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     }
 
     override fun errorResult(npErrorEnum: NpErrorEnum) {
+//TODO ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        runOnUiThread {
+            Toast.makeText(this, npErrorEnum.name, Toast.LENGTH_SHORT).show()
+            Log.i("ERROR RESULT",""+npErrorEnum.name);
+        }
+//TODO ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
         TODO("Not yet implemented")
     }
 
@@ -300,8 +327,6 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     }
 
     override fun valuesToProcessing(values: (total: Double, tip: Double, reference: String, promotion: String) -> Unit) {
-
-
         val total = editTransValue.text.toString()
 
         val referenceText = editTextReference.text.toString()
