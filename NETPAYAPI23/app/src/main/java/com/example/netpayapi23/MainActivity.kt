@@ -3,6 +3,8 @@ package com.example.netpayapi23
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     private lateinit var miniPreferences: IMiniPreferences
     private var transID: String = "" //para el servicio del detalle de la compra
     private var orderId = "" //para el servicio del vouncher
+    var bd: SQLiteDatabase? = null
+    var admin: AdminSQLiteOpenHelper? = null
 
     companion object {
         private const val BT_REQUEST_PERMISSION = 222
@@ -50,6 +54,10 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        //PREPARA ANTES DE COBRAR
+
+        admin = AdminSQLiteOpenHelper(this, "coba", null, 1)
+        bd = admin.getWritableDatabase()
 
         // Initialize actions for transactions
         transaction = NpTransactions(this, connectReader, this)
@@ -117,6 +125,8 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         }
 
         initializeViewState()
+
+
     }
 
     private fun initializeViewState() {
@@ -405,5 +415,11 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         return BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.size)
     }
 
-
+    fun Leedb(){
+        val fila: Cursor = bd.rawQuery(
+            "select * from config where num=1"
+                    + "", null
+        )
+    }
 }
+
