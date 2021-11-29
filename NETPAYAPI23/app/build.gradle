@@ -44,4 +44,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation 'com.gitlab.netpaymx.npm:netpay-mini-android-sdk:v1.1.1'
+    implementation files('libs\\ksoap2-android-assembly-2.6.4.jar')
+
 }
