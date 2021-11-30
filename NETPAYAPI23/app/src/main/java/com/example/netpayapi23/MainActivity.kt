@@ -36,6 +36,7 @@ import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpTransportSE
 import java.io.*
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.xml.transform.OutputKeys.METHOD
 
@@ -75,12 +76,16 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     val version: String? = null
     val nomad_serie: String? = null
     val intentos: String? = null
-    val guardar = "0"
+    var guardar = "0"
 
     private val SOAPACTION = "urn:veriboxwsdl#veribox"
 
     var timer2 = Timer() //Tiempo espera para lanzar a VERIBOX
     var estado_lector = false
+
+    var sig_tckfac = false
+    var timer = Timer() //Timepo espera conexion.
+
 
     private val puente: Handler = object : Handler() {
         override fun handleMessage(msg: Message) {
@@ -183,6 +188,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         initializeViewState()
 
         Leedb()
+        buscaConf()
 
     }
 
@@ -474,11 +480,71 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
 
 //TODO -----------------------------------------------------------------------------------------------------------------------
 
+    fun regresa_xml(xml: String, b1: String?, b2: String?): String?{
+        var  envi_retun: String? = ""
+        var  cadena = xml
+        //Busca cadena1 y regresa donde inicia
+        var  resultado = cadena.indexOf(b1!!)
+        if (resultado != -1){
+            //Desde encuentra hasta el final
+            cadena = cadena.substring(resultado)
+            //Busca cadena2 y regresa donde inicia
+            resultado = cadena.indexOf(b2!!)
+            if (resultado != -1){
+                //Desde encuentra hasta el final
+                cadena = cadena.substring(resultado)
+                //Dividir la respuesta, obtiene resultado
+                val partes = cadena.split("\"").toTypedArray()
+                //Resultado Final
+                val respg = partes[1]
+                envi_retun = respg
+            } else {
+                envi_retun = "NO"
+            }
+        } else {
+            envi_retun = "NO"
+        }
+        return envi_retun
+    }
+
+    fun fnSolicitarTipoLector() {
+        guarda_log("fnSolicitarTipoLector.dentro", false)
+        //Toast.makeText(this, "T4", Toast.LENGTH_SHORT).show();
+        //Aqui se cambia por el valor de  qpPRUEBAS (valor defecto) por el de  qpPRODUCCION
+        if (pAmbienteDB == 1) {
+            //PRODUCCION
+//            qplclController = QpayControlador.ObtenerInstancia(                                   TODO -> PENDIENTE PARA IMPLEMENTAR
+//                pContext,                                                                         TODO -> PENDIENTE PARA IMPLEMENTAR
+//                qplclListener,                                                                    TODO -> PENDIENTE PARA IMPLEMENTAR
+//                QpayControlador.qpAmbiente.qpPRODUCCION,                                          TODO -> PENDIENTE PARA IMPLEMENTAR
+//                QpayControlador.qpLector.qpBluetooth                                              TODO -> PENDIENTE PARA IMPLEMENTAR
+//            )                                                                                     TODO -> PENDIENTE PARA IMPLEMENTAR
+            //Toast.makeText(this, "Servidor: PRODUCCION.", Toast.LENGTH_SHORT).show();
+        } else {
+            //PRUEBAS
+//            qplclController = QpayControlador.ObtenerInstancia(                                   TODO -> PENDIENTE PARA IMPLEMENTAR
+//                pContext,                                                                         TODO -> PENDIENTE PARA IMPLEMENTAR
+//                qplclListener,                                                                    TODO -> PENDIENTE PARA IMPLEMENTAR
+//                QpayControlador.qpAmbiente.qpPRUEBAS,                                             TODO -> PENDIENTE PARA IMPLEMENTAR
+//                QpayControlador.qpLector.qpBluetooth                                              TODO -> PENDIENTE PARA IMPLEMENTAR
+//            )                                                                                     TODO -> PENDIENTE PARA IMPLEMENTAR
+            //Toast.makeText(this, "Servidor: DEMO.", Toast.LENGTH_SHORT).show();
+        }
+
+        //qplclController.qpVerificaLectorConectado();
+        //txtViewEstado.setText("Qpay API : " + qplclController.qpObtenVersionSDK());
+        //Toast.makeText(this, "MANDO A CONECTAR_2", Toast.LENGTH_SHORT).show();
+
+        //2-Pago Bancario - Conecta con NOMAD2
+        guarda_log("fnSolicitarTipoLector.dentro.fnIniciaEscan", false)
+        //fnIniciaEscan();
+    }
+
     open fun busca_cadena1(xml: String) {
         guarda_log("busca_cadena1.$xml", false)
         var busca1 = "pago-bancario"
         var busca2 = "respg"
-        var dato: String = regresa_xml(xml, busca1, busca2)
+        var dato: String? = regresa_xml(xml, busca1, busca2)
         //textView_con.setText(dato);
         if (dato == "true") {
             guarda_log("busca_cadena1.dato.equals(\"true\")", false)
@@ -494,18 +560,18 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 val sf = String.format("%.2f", f)
 
                 //5.-Pago Bancario - Asigna Monto
-                textView1.setText("MONTO")
+                textView003.setText("MONTO")
                 textView2.text = "$$sf"
                 monto_venta = sf
                 //Toast.makeText(this, "T1", Toast.LENGTH_SHORT).show();
                 //6.-Pago Bancario - Conecta con NOMAD2
-                if (mx.qpay.netpay.QPListener.qplclController == null) {
+//                if (qplclController == null) {                                                    TODO -> PEMDIENTE POR IMPLEMENTAR
                     //Toast.makeText(this, "T2", Toast.LENGTH_SHORT).show();
-                    qplclListener = mx.qpay.netpay.QPListener.myQpaySDkController()
+//                    qplclListener = new myQpaySDkController()                                     TODO -> PEMDIENTE POR IMPLEMENTAR
                     //Toast.makeText(this, "T3", Toast.LENGTH_SHORT).show();
                     guarda_log("busca_cadena1.fnSolicitarTipoLector", false)
                     fnSolicitarTipoLector()
-                }
+//                }
             } else {
                 Toast.makeText(this, "REVISANDO 3", Toast.LENGTH_SHORT).show()
                 if (sig_tckfac) {
@@ -533,14 +599,12 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         }
     }
 
-
-
     open fun fnDesconectaDispositivo() {
         //Toast.makeText(getApplicationContext(), "Funcion Desconecta", Toast.LENGTH_LONG).show();
 //        qplclController.qpDesconectaDispositivo()                                                 TODO -> PENDIENTE PO IMPLEMENTAR
     }
 
-        fun lanzaVeri() {
+    fun lanzaVeri() {
             timer2.cancel()
             if (estado_lector) {
                 fnDesconectaDispositivo()
@@ -548,17 +612,17 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
 
         }
 
-        private var Accion2: Runnable? = Runnable { //Funcion a ejecutar
+    private var Accion2: Runnable? = Runnable { //Funcion a ejecutar
                 lanzaVeri()
                 Toast.makeText(applicationContext, "lanzaVeri!", Toast.LENGTH_LONG).show()
             }
 
-        open fun hiloVeri() {
+    open fun hiloVeri() {
                 //Aun dentro del mismo Hilo
                 runOnUiThread(Accion2)
             }
 
-        open fun fin_f2() {
+    open fun fin_f2() {
             //stopConnection();
             timer2.scheduleAtFixedRate(object : TimerTask() {
                  override fun run() {
@@ -568,12 +632,12 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             }, 2000, 4000)
         }
 
-        open fun msj1(muestra: String?) {
+    open fun msj1(muestra: String?) {
             //msj1(">->0>3>4>5>6>7>");
-            val j = Intent(this, msj::class.java)
-            j.putExtra("msjcon", muestra)
+//            val j = Intent(this, msj::class.java)
+//            j.putExtra("msjcon", muestra)
             //j.putExtra("tiempo", tiempo);
-            startActivity(j)
+//            startActivity(j)
             //Toast.makeText(this, "msj1", Toast.LENGTH_SHORT).show();
         }
 
@@ -809,20 +873,22 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 */try {
                     mac = ""
                     val getMacetho: String? = getMacAddress()
-                    if (getMacetho.length > 0) {
-                        mac = getMacetho
-                    } else {
-                        try {
-                            val manager =
-                                applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-                            val info = manager.connectionInfo
-                            mac = info.macAddress.toUpperCase()
-                            Toast.makeText(this, "MAC INALAMBRICA$mac", Toast.LENGTH_SHORT).show()
-                        } catch (e1: java.lang.Exception) {
-                            mac = "Error MAC."
-                        }
+                    if (getMacetho != null) {
+                        if (getMacetho.length > 0) {
+                            mac = getMacetho
+                        } else {
+                            try {
+                                val manager =
+                                    applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+                                val info = manager.connectionInfo
+                                mac = info.macAddress.toUpperCase()
+                                Toast.makeText(this, "MAC INALAMBRICA$mac", Toast.LENGTH_SHORT).show()
+                            } catch (e1: java.lang.Exception) {
+                                mac = "Error MAC."
+                            }
 
-                        // mac = "Error MAC.";
+                            // mac = "Error MAC.";
+                        }
                     }
                 } catch (e: java.lang.Exception) {
                     mac = "Error MAC2."
@@ -876,6 +942,309 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             Toast.makeText(this, "NO hay acceso al Almacenamiento.", Toast.LENGTH_SHORT).show()
             fin_f2()
         }
+    }
+
+    var con_reloj = 0
+    var paso_cobro = 0
+    var imp = false
+
+    fun guarda(con_fin: String?, num_ref: String) {
+        // Creamos una carpeta "AIE" dentro del directorio "/"
+        // Con el método "mkdirs()" creamos el directorio si es necesario
+        val path = File(Environment.getExternalStorageDirectory(), "Tickets")
+        path.mkdirs()
+
+        //Una vez creado disponemos de un archivo para guardar datos
+        try {
+            val ruta_sd = Environment.getExternalStorageDirectory()
+            val f = File(ruta_sd.absolutePath, "Tickets/REF$num_ref.txt")
+            val fout = OutputStreamWriter(
+                FileOutputStream(f)
+            )
+            fout.write(con_fin)
+            fout.close()
+            //Toast.makeText(this, "Texto de prueba.3", Toast.LENGTH_SHORT).show();
+        } catch (ex: java.lang.Exception) {
+            Log.e("Ficheros", "Error al escribir fichero a tarjeta SD  QP2")
+        }
+
+        /*
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // acciones que se ejecutan tras los milisegundos
+                //fin(null);
+            }
+        }, 3000);
+        */
+        }
+
+    fun esc_baucher(
+        salida: String?,
+        descrip: String,
+        num_trans: String?,
+        codigoAprobacion: String?,
+        digitos_tar: String,
+        h_f: String?,
+        marcaTarjeta: String?,
+        bancoEmisor: String?,
+        arqc: String?,
+        aid: String?,
+        titular: String?,
+        tsi: String?,
+        res_pago: Boolean,
+        h_f_sf: String?,
+        vigencia: String?,
+        terminalID: String?,
+        numeroControl: String?,
+        referenciaBanco: String?,
+        tvr: String?,
+        apn: String?,
+        afiliacion: String?,
+        TipoTarjeta: String?
+    ) {
+        //Contenido del BAUCHER
+        val dias = arrayOf("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado")
+        val hoy = Date()
+        val cal = Calendar.getInstance()
+        cal.time = hoy
+        val numeroDia = cal[Calendar.DAY_OF_WEEK]
+        val dia = dias[numeroDia - 1]
+        var tck_ori: String? = null
+        val tck_copia: String? = null
+        val date = System.currentTimeMillis()
+        val sdf = SimpleDateFormat("d/MM/yyyy")
+        val dateString = sdf.format(date)
+        val sdf2 = SimpleDateFormat("HH:mm")
+        val dateString2 = sdf2.format(date)
+        val tarjeta_valor = "XXXXXX$digitos_tar"
+        val f = monto_venta!!.toFloat()
+        val monto_venta_s = String.format("%7.2f", f)
+        val text1 =
+            "\t\t$descrip\n CUBOX 3, SIGMA AIE\nDEMO, MORELOS\n Sistema de Cobro Bancario\n"
+        var ambText = ""
+        ambText = if (pAmbienteDB == 1) {
+            "\tAmbiente de PRODUCCION:\nSolicitudes enviadas a servidor de PRODUCION"
+        } else {
+            "\tAmbiente DEMO:\nSolicitudes enviadas a servidor de DEMOSTRACION"
+        }
+        guardar = "1"
+        if (paso_cobro == 0) {
+            if (res_pago) {
+                /*
+                String original = "\n<<ORIGINAL ESTABLECIMIENTO>>";
+                String copia = "\n<<COPIA CLIENTE>>";
+                String text2="\n\nEntrada:\tChip"+
+                        "\nARQC:\t\t"+arqc+
+                       // "\nALABEL:\t\t"+alabel+
+                        //"\nBANCO:\t\t"+banco+
+                        "\nAID:\t\t"+aid+
+                        "\nTransacción:\t"+num_trans+
+                        "\nNo. Tarjeta:\t"+digitos_tar+
+                        "\nAutorización:\t"+codigoAprobacion+
+                        "\n\n\t\tVENTA"+
+                        "\n\tIMPORTE $	"+monto_venta_s+
+                        "\n\t" + h_f+
+                        "\n\n\n FIRMA :___________________________________"+
+                        "\n\t"+titular+
+                        "\n ME OBLIGO EN LOS TERMINOS DADOS\n DE ESTE PAGARE\n MXAIE01 01";
+
+
+                tck_ori = text1+original+text2 +"\n\t-----------------------------------"+"\n"+"\n"+"\n";
+                tck_copia = text1+copia+text2+"\n";
+                //tck_ori = tck_ori + tck_copia;
+                //guarda( tck_ori, num_trans );
+                //guarda( tck_copia, num_trans+"c");
+                */
+                sig_tckfac = true
+                imp = false
+
+                //Toast.makeText(this, "REVISANDO 1", Toast.LENGTH_SHORT).show();
+                gen_xml(
+                    salida, descrip,
+                    num_trans!!,
+                    codigoAprobacion!!, digitos_tar,
+                    h_f_sf!!,
+                    marcaTarjeta!!,
+                    bancoEmisor!!,
+                    arqc!!,
+                    aid!!,
+                    titular!!,
+                    tsi!!, res_pago, monto_venta_s,
+                    vigencia!!,
+                    terminalID!!,
+                    numeroControl!!, referenciaBanco!!, tvr!!, apn!!,
+                    afiliacion!!, TipoTarjeta!!
+                )
+            } else {
+                val original = "\n\n\n\n\n\n\n\n\t"+descrip+"\n\n"+ "\n\n 	IMPORTE $	"+monto_venta_s+"\n\n\t"+ dia+
+                        "\n\n\tFECHA:"+dateString+ "\n\tFECHA:"+dateString2+"\n\n\n\n"+ambText+"\n\n\n\n\n"
+
+                //"\n\n\nAPLICACIONES DE INGENIERIA ELECTRONICA\n ME OBLIGO EN LOS TERMINOS DADOS\n DE ESTE PAGARE\n MXAIE01 01";
+                tck_ori = original
+                if (imp) {
+                    if (num_trans != null) {
+                        guarda(tck_ori, num_trans)
+                    }
+                }
+                gen_xml(
+                    salida, descrip,
+                    num_trans!!,
+                    codigoAprobacion!!, digitos_tar,
+                    h_f_sf!!,
+                    marcaTarjeta!!,
+                    bancoEmisor!!,
+                    arqc!!,
+                    aid!!,
+                    titular!!,
+                    tsi!!, res_pago, monto_venta_s,
+                    vigencia!!,
+                    terminalID!!,
+                    numeroControl!!, referenciaBanco!!, tvr!!, apn!!,
+                    afiliacion!!, TipoTarjeta!!
+                )
+            }
+        }
+        paso_cobro = 1
+        //enviVeri();
+        //Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.example.php1");
+        //startActivity(launchIntent);
+
+        //tira_auditoria(descrip, num_trans, codigoAprobacion, digitos_tar, h_f_sf, alabel, banco, arqc, aid, titular, tsi , res_pago, monto_venta_s);
+    }
+
+    fun enviVeri() {
+        val path = File(Environment.getExternalStorageDirectory(), "Tickets")
+        path.mkdirs()
+
+        //Una vez creado disponemos de un archivo para guardar datos
+        try {
+            val ruta_sd = Environment.getExternalStorageDirectory()
+            val f = File(ruta_sd.absolutePath, "Tickets/PBVR.txt")
+            val fout = OutputStreamWriter(
+                FileOutputStream(f)
+            )
+            fout.write("FIN\n")
+            fout.close()
+            //Toast.makeText(this, "FIN msj", Toast.LENGTH_SHORT).show();
+        } catch (ex: java.lang.Exception) {
+            Log.e("Ficheros", "Error al escribir fichero a tarjeta SD QP1")
+        }
+    }
+
+
+    fun rev_esp() {
+        con_reloj--
+        if (con_reloj == 0) {
+            timer.cancel()
+            guardar = "1"
+            sig_tckfac = false
+            //----------------------------------------------------
+            val registro = ContentValues()
+            registro.put("pResultado", "")
+            val cant = bd!!.update("config", registro, "num=1", null)
+            //----------------------------------------------------
+            val mesj_err = "** DECLINADA **\n\n\n\tNO hay comunicación:\n\tLector de Tarjetas."
+            //String mesj_err = " ** DECLINADA POR LECTOR **\n";;
+            esc_baucher(
+                "Extras",
+                mesj_err,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                false,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            )
+            gen_xml(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                false,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            )
+            enviVeri()
+            val launchIntent = packageManager.getLaunchIntentForPackage("msm.aie.veribox")
+            startActivity(launchIntent)
+        } else {
+            //Toast.makeText(this, "MENOS", Toast.LENGTH_SHORT).show();
+            if (con_reloj == 10) {
+                textView003.setTextColor(Color.RED)
+            }
+            val conta_s = String.format("%02d", con_reloj)
+            textView003.setText(conta_s)
+        }
+    }
+
+    private val Accion: Runnable = object : Runnable {
+        override fun run() {
+            //Funcion a ejecutar
+            rev_esp()
+            //Toast.makeText(getApplicationContext(), "Tiempo!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    private fun HiloSReloj() {
+        //Aun entro del mismo Hilo
+        runOnUiThread(Accion)
+    }
+
+    fun esp() {
+        //aqui voy
+
+        //Creamos el Timer
+        //Empezando des de el segundo 0 y cada 5 ejecuta
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                //Ejecuta
+                HiloSReloj()
+            }
+        }, 1000, 1000)
+        /*
+        if (esp_con){
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    // acciones que se ejecutan tras los milisegundos
+                    //Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.example.php1");
+                    //startActivity(launchIntent);
+                    rev_esp();
+                }
+            }, 1000);
+        }
+        */
     }
 
     fun busca_doc() {
@@ -1010,11 +1379,6 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             busca_doc()
         }
     }
-
-
-
-
-
 }
 
 
