@@ -1,6 +1,7 @@
 package com.example.netpayapi23
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -31,14 +32,12 @@ import mx.com.netpay.sdk.reports.NpReports
 import mx.com.netpay.sdk.transactions.NpTransactions
 import mx.com.netpay.sdk.utils.MiniPreferences
 import org.ksoap2.SoapEnvelope
-import org.ksoap2.serialization.MarshalHashtable.NAMESPACE
 import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpTransportSE
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.xml.transform.OutputKeys.METHOD
 
 
 class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener {
@@ -86,6 +85,8 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     var sig_tckfac = false
     var timer = Timer() //Timepo espera conexion.
 
+    private val NAMESPACE = "urn:veriboxwsdl"
+    private val METHOD = "veribox"
 
     private val puente: Handler = object : Handler() {
         override fun handleMessage(msg: Message) {
@@ -109,7 +110,6 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         private const val userNameDefault = "netpay-mini-android-sdk@bylup.com"
         private const val userPassDefault = "Password123!"
         private var _ConfigSdk: ConfigSdk? = null
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,6 +126,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         miniPreferences = MiniPreferences(this)
 
         // Subscribe broadcast for finding device
+        //Aun no hasta que se concluya P1
         initializeDevice()
         _ConfigSdk = ConfigSdk.SANDBOX
         textView001.setText("" + _ConfigSdk)
@@ -1255,6 +1256,9 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         val f = File(Environment.getExternalStorageDirectory().toString() + "/Tickets/")
         //Creo el array de tipo File con el contenido de la carpeta
         val files = f.listFiles()
+
+        Log.i("VALOR DE f ->", "" +f)
+
         //Hacemos un Loop por cada fichero para extraer el nombre de cada uno
         var i = 0
         while (i < files.size) {
@@ -1335,7 +1339,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 bReader.close()
 
                 //Borra archivo.
-                rFileE.delete()
+                //rFileE.delete()
                 //Toast.makeText(this, "Entra 4", Toast.LENGTH_SHORT).show();
             } catch (e: IOException) {
                 Toast.makeText(this, "NO Lee parametros de entrada", Toast.LENGTH_SHORT).show()
@@ -1351,7 +1355,28 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         //Defino la ruta donde busco los ficheros
         val f = File(Environment.getExternalStorageDirectory().toString() + "/Tickets/")
         //Creo el array de tipo File con el contenido de la carpeta
+        Log.i("VALOR DE f -BF>", "" +f)
+
+        val message1 = "VALOR DE f -BF>" + "\n" + f
+
+         AlertDialog.Builder(this@MainActivity)
+            .setTitle("ESTO VIENE DE buscaConf")
+            .setMessage(message1)
+            .setPositiveButton("ok", null)
+            .show()
+
+
         val files = f.listFiles()
+        Log.i("VALOR DE files -BF>", "" +files)
+
+        val message2 = "VALOR DE files -BF>" + "\n" + files
+
+        AlertDialog.Builder(this@MainActivity)
+            .setTitle("ESTO VIENE DE buscaConf")
+            .setMessage(message2)
+            .setPositiveButton("ok", null)
+            .show()
+
         //Hacemos un Loop por cada fichero para extraer el nombre de cada uno
         var i = 0
         while (i < files.size) {
@@ -1359,6 +1384,16 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             //Sacamos del array files un fichero
             val file = files[i]
             //Si es directorio...
+            Log.i("VALOR isDirectory -BF>", "" +file.isDirectory())
+
+            val message3 = "VALOR DE files -BF>" + "\n" + file.isDirectory()
+
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle("ESTO VIENE DE buscaConf")
+                .setMessage(message3)
+                .setPositiveButton("ok", null)
+                .show()
+
             if (file.isDirectory)
                 contenido = contenido +(file.name + "/ carpeta\n")
             //Si es fichero...
@@ -1374,9 +1409,26 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         }
         if (encontro) {
             Toast.makeText(this, "ENCONTRO CONF", Toast.LENGTH_SHORT).show()
+
+            val message4 = "ENCONTRO CONF"
+
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle("ESTO VIENE DE buscaConf")
+                .setMessage(message4)
+                .setPositiveButton("ok", null)
+                .show()
+
         } else {
             Toast.makeText(this, "NO ENCONTRO CONF", Toast.LENGTH_SHORT).show()
             busca_doc()
+
+            val message4 = "NO ENCONTRO CONF"
+
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle("ESTO VIENE DE buscaConf")
+                .setMessage(message4)
+                .setPositiveButton("ok", null)
+                .show()
         }
     }
 }
