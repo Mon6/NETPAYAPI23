@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             }
         }
     }
+
     companion object {
         private const val BT_REQUEST_PERMISSION = 222
         private const val ENABLE_BT_REQUEST_CODE = 745
@@ -480,8 +481,11 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
     }
 
 //TODO -----------------------------------------------------------------------------------------------------------------------
+    var cadenaPuente = ""
 
     fun regresa_xml(xml: String, b1: String?, b2: String?): String?{
+        cadenaPuente = "ENTRO A regresa_xml"
+        puente()
         var  envi_retun: String? = ""
         var  cadena = xml
         //Busca cadena1 y regresa donde inicia
@@ -507,7 +511,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         }
         return envi_retun
     }
-
+//
     fun fnSolicitarTipoLector() {
         guarda_log("fnSolicitarTipoLector.dentro", false)
         //Toast.makeText(this, "T4", Toast.LENGTH_SHORT).show();
@@ -540,18 +544,29 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         guarda_log("fnSolicitarTipoLector.dentro.fnIniciaEscan", false)
         //fnIniciaEscan();
     }
+//
+     fun busca_cadena1(xml: String) {
+    cadenaPuente = "ENTRO A busca_cadena1"
+    puente()
 
-    open fun busca_cadena1(xml: String) {
         guarda_log("busca_cadena1.$xml", false)
         var busca1 = "pago-bancario"
         var busca2 = "respg"
         var dato: String? = regresa_xml(xml, busca1, busca2)
+
+    cadenaPuente = "VALOR 1 DE DATO " + dato
+    puente()
+
         //textView_con.setText(dato);
         if (dato == "true") {
             guarda_log("busca_cadena1.dato.equals(\"true\")", false)
             if (guardar == "0") {
                 busca2 = "montopg"
                 dato = regresa_xml(xml, busca1, busca2)
+
+                cadenaPuente = "VALOR 2 DE DATO " + dato
+                puente()
+
                 monto_venta = dato
                 //De String a Flotante
                 val f = monto_venta!!.toFloat()
@@ -561,8 +576,15 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 val sf = String.format("%.2f", f)
 
                 //5.-Pago Bancario - Asigna Monto
-                textView003.setText("MONTO")
+
+                cadenaPuente = cadenaPuente + " " +"MONTO $\n"
+                textView003.setText(cadenaPuente)
+                puente()
+//                textView1.setText("MONTO") todo -> original
                 textView2.text = "$$sf"
+
+                cadenaPuente = "VALOR sf 1 DE DATO $sf"
+                puente()
                 monto_venta = sf
                 //Toast.makeText(this, "T1", Toast.LENGTH_SHORT).show();
                 //6.-Pago Bancario - Conecta con NOMAD2
@@ -599,12 +621,12 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             }
         }
     }
-
+//
     open fun fnDesconectaDispositivo() {
         //Toast.makeText(getApplicationContext(), "Funcion Desconecta", Toast.LENGTH_LONG).show();
 //        qplclController.qpDesconectaDispositivo()                                                 TODO -> PENDIENTE PO IMPLEMENTAR
     }
-
+//
     fun lanzaVeri() {
             timer2.cancel()
             if (estado_lector) {
@@ -612,17 +634,17 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             }
 
         }
-
+//
     private var Accion2: Runnable? = Runnable { //Funcion a ejecutar
                 lanzaVeri()
                 Toast.makeText(applicationContext, "lanzaVeri!", Toast.LENGTH_LONG).show()
             }
-
+//
     open fun hiloVeri() {
                 //Aun dentro del mismo Hilo
                 runOnUiThread(Accion2)
             }
-
+//
     open fun fin_f2() {
             //stopConnection();
             timer2.scheduleAtFixedRate(object : TimerTask() {
@@ -632,7 +654,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 }
             }, 2000, 4000)
         }
-
+//
     open fun msj1(muestra: String?) {
             //msj1(">->0>3>4>5>6>7>");
 //            val j = Intent(this, msj::class.java)
@@ -652,8 +674,9 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             IdUsuario=fila.getString(4);
             pContrasena=fila.getString(5);
             pAmbienteDB=fila.getInt(6);
-
-            textView003.setText(""+IdUsuario+" - "+pContrasena+" - "+pAmbienteDB)
+            cadenaPuente = cadenaPuente + ""+IdUsuario+" - "+pContrasena+" - "+pAmbienteDB + "\n"
+            textView003.setText(cadenaPuente)
+            puente()
             if (pAmbienteDB == 1){
                 //b_bk.setVisibility(View.INVISIBLE); //Muestra que es DEMO
                 //Toast.makeText(this, "PRODUCCION.", Toast.LENGTH_SHORT).show();
@@ -668,7 +691,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         }
 
     }
-
+//
     fun guarda_log(con_fin: String?, gra: Boolean) {
         // Creamos una carpeta "AIE" dentro del directorio "/"
         // Con el método "mkdirs()" creamos el directorio si es necesario
@@ -693,14 +716,14 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             con_fin + "\n"
         }
     }
-
+//
     fun isExternalStorageReadable(): Boolean {
         val state = Environment.getExternalStorageState()
         return if (Environment.MEDIA_MOUNTED == state || Environment.MEDIA_MOUNTED_READ_ONLY == state) {
             true
         } else false
     }
-
+//
     @Throws(IOException::class)
     fun loadFileAsString(filePath: String?): String? {
         val data = StringBuffer(1000)
@@ -714,7 +737,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         reader.close()
         return data.toString()
     }
-
+//
     fun getMacAddress(): String? {
         try {
             return loadFileAsString("/sys/class/net/eth0/address")
@@ -724,8 +747,12 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             return null
         }
     }
-
+//
     fun envia(salida: String?) {
+
+    cadenaPuente = "ENTRO A envia"
+    puente()
+
         guarda_log("ENVIA", false)
         Thread {
             var respuesta = ""
@@ -749,7 +776,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             puente.sendMessage(sms)
         }.start()
     }
-
+//
     fun gen_xml(
         salida: String?,
         descrip: String?,
@@ -774,6 +801,9 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         afiliacion: String,
         TipoTarjeta: String
     ) {
+    cadenaPuente = "ENTRO A gen_xml"
+    puente()
+
         var digitos_tar = digitos_tar
         var monto_venta_s = monto_venta_s
         guarda_log("GEN_XML.$res_pago", false)
@@ -826,8 +856,12 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             envia(text)
         }
     }
-
+//
     fun lee_doc() {
+
+    cadenaPuente = "ENTRO A lee_doc"
+    puente()
+
         guarda_log("LEE_DOC", false)
         val todo = ""
         if (isExternalStorageReadable()) {
@@ -863,7 +897,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 //Cieraa archivo
                 bReader.close()
                 //Borra archivo.
-                rFileE.delete()
+//                rFileE.delete()  todo ---> para que no borre pbdata
                 guarda_log("LEE_DOC.borra archivo", false)
 
                 /*
@@ -908,7 +942,11 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 }
                 mac_serial = "---"
                 //nomad_serie="WP02840312150094";
-                textView003.setText(lector)
+                cadenaPuente = cadenaPuente+" lector " + lector + "\n"
+                textView003.setText(cadenaPuente)
+//                textView28.setText(lector) todo -> original
+                puente()
+
                 URL = "http://$URL/Veribox/Veribox.php"
                 //1.-Pago Bancario - Solicita monto de venta
                 //Enviando=">"+num_tabled+">"+mac+">"+version+">"+mac_serial+">"+nomad+">"+intentos+">";
@@ -944,11 +982,11 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             fin_f2()
         }
     }
-
+//
     var con_reloj = 0
     var paso_cobro = 0
     var imp = false
-
+//
     fun guarda(con_fin: String?, num_ref: String) {
         // Creamos una carpeta "AIE" dentro del directorio "/"
         // Con el método "mkdirs()" creamos el directorio si es necesario
@@ -979,7 +1017,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         }, 3000);
         */
         }
-
+//
     fun esc_baucher(
         salida: String?,
         descrip: String,
@@ -1113,7 +1151,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
 
         //tira_auditoria(descrip, num_trans, codigoAprobacion, digitos_tar, h_f_sf, alabel, banco, arqc, aid, titular, tsi , res_pago, monto_venta_s);
     }
-
+//
     fun enviVeri() {
         val path = File(Environment.getExternalStorageDirectory(), "Tickets")
         path.mkdirs()
@@ -1132,8 +1170,8 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             Log.e("Ficheros", "Error al escribir fichero a tarjeta SD QP1")
         }
     }
-
-
+//
+//
     fun rev_esp() {
         con_reloj--
         if (con_reloj == 0) {
@@ -1204,10 +1242,15 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 textView003.setTextColor(Color.RED)
             }
             val conta_s = String.format("%02d", con_reloj)
-            textView003.setText(conta_s)
+//            cadenaPuente = cadenaPuente + "contador " + conta_s + "\n"
+              val con = "contador " + conta_s + "\n"
+            textView003.setText(con)
+//            textView_con.setText(conta_s) todo -> original
+//            puente()
+
         }
     }
-
+//
     private val Accion: Runnable = object : Runnable {
         override fun run() {
             //Funcion a ejecutar
@@ -1215,13 +1258,12 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             //Toast.makeText(getApplicationContext(), "Tiempo!", Toast.LENGTH_LONG).show();
         }
     }
-
-
+//
     private fun HiloSReloj() {
         //Aun entro del mismo Hilo
         runOnUiThread(Accion)
     }
-
+//
     fun esp() {
         //aqui voy
 
@@ -1247,8 +1289,11 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         }
         */
     }
-
+//
     fun busca_doc() {
+    cadenaPuente = "ENTRO A busca_doc"
+    puente()
+
         Toast.makeText(this, "BUSCA ARCHIVO VENTA", Toast.LENGTH_SHORT).show()
         var contenido = ""
         var encontro = false
@@ -1284,13 +1329,20 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             fin_f2()
         }
     }
-
+//
     fun lee_docConf() {
         //Toast.makeText(this, "Entra 1", Toast.LENGTH_SHORT).show();
+        cadenaPuente = "ENTRO A lee_docConf"
+        puente()
+
         var ambiente = ""
         var usrPago = ""
         var contra = ""
         var salir = false
+
+        cadenaPuente = "VALOR DE isExternalStorageReadable():  " + isExternalStorageReadable()
+        puente()
+
         if (isExternalStorageReadable()) {
             //Toast.makeText(this, "Entra 2", Toast.LENGTH_SHORT).show();
             //File rFileE = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), EXTERNAL_FILENAME);
@@ -1347,7 +1399,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             }
         }
     }
-
+//
     fun buscaConf() {
         guarda_log("BUSCA_DOCCONFIG", false)
         var contenido = ""
@@ -1357,25 +1409,25 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
         //Creo el array de tipo File con el contenido de la carpeta
         Log.i("VALOR DE f -BF>", "" +f)
 
-        val message1 = "VALOR DE f -BF>" + "\n" + f
+//        val message1 = "VALOR DE f -BF>" + "\n" + f
 
-         AlertDialog.Builder(this@MainActivity)
-            .setTitle("ESTO VIENE DE buscaConf")
-            .setMessage(message1)
-            .setPositiveButton("ok", null)
-            .show()
+//         AlertDialog.Builder(this@MainActivity)
+//            .setTitle("ESTO VIENE DE buscaConf")
+//            .setMessage(message1)
+//            .setPositiveButton("ok", null)
+//            .show()
 
 
         val files = f.listFiles()
         Log.i("VALOR DE files -BF>", "" +files)
 
-        val message2 = "VALOR DE files -BF>" + "\n" + files
+//        val message2 = "VALOR DE files -BF>" + "\n" + files
 
-        AlertDialog.Builder(this@MainActivity)
-            .setTitle("ESTO VIENE DE buscaConf")
-            .setMessage(message2)
-            .setPositiveButton("ok", null)
-            .show()
+//        AlertDialog.Builder(this@MainActivity)
+//            .setTitle("ESTO VIENE DE buscaConf")
+//            .setMessage(message2)
+//            .setPositiveButton("ok", null)
+//            .show()
 
         //Hacemos un Loop por cada fichero para extraer el nombre de cada uno
         var i = 0
@@ -1386,13 +1438,13 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
             //Si es directorio...
             Log.i("VALOR isDirectory -BF>", "" +file.isDirectory())
 
-            val message3 = "VALOR DE files -BF>" + "\n" + file.isDirectory()
-
-            AlertDialog.Builder(this@MainActivity)
-                .setTitle("ESTO VIENE DE buscaConf")
-                .setMessage(message3)
-                .setPositiveButton("ok", null)
-                .show()
+//            val message3 = "VALOR DE files -BF>" + "\n" + file.isDirectory()
+//
+//            AlertDialog.Builder(this@MainActivity)
+//                .setTitle("ESTO VIENE DE buscaConf")
+//                .setMessage(message3)
+//                .setPositiveButton("ok", null)
+//                .show()
 
             if (file.isDirectory)
                 contenido = contenido +(file.name + "/ carpeta\n")
@@ -1431,6 +1483,16 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 .show()
         }
     }
+//
+    fun puente(){
+
+                    AlertDialog.Builder(this@MainActivity)
+                .setTitle("ESTO VIENE DE buscaConf")
+                .setMessage(cadenaPuente)
+                .setPositiveButton("ok", null)
+                .show()
+    }
+
 }
 
 
