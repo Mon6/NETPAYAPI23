@@ -581,7 +581,7 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
                 textView003.setText(cadenaPuente)
                 puente()
 //                textView1.setText("MONTO") todo -> original
-                textView2.text = "$$sf"
+                editTransValue.setText("$sf")
 
                 cadenaPuente = "VALOR sf 1 DE DATO $sf"
                 puente()
@@ -1486,11 +1486,11 @@ class MainActivity : AppCompatActivity(), ITransactionListener, IReportsListener
 //
     fun puente(){
 
-                    AlertDialog.Builder(this@MainActivity)
-                .setTitle("ESTO VIENE DE buscaConf")
-                .setMessage(cadenaPuente)
-                .setPositiveButton("ok", null)
-                .show()
+//                    AlertDialog.Builder(this@MainActivity)
+//                .setTitle("ESTO VIENE DE buscaConf")
+//                .setMessage(cadenaPuente)
+//                .setPositiveButton("ok", null)
+//                .show()
     }
 
 }
